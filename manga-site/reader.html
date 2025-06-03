@@ -1,0 +1,37 @@
+<body>
+  <div class="container" id="image-container"></div>
+  <div class="container" id="next-button-container"></div> <!-- 🔹 ปุ่มถัดไป -->
+  <script>
+    const url = new URLSearchParams(window.location.search);
+    const slug = url.get('title');
+    const chIndex = +url.get('ch');
+
+    fetch('data/manga.json')
+      .then(res => res.json())
+      .then(data => {
+        const manga = data.manga.find(m => m.slug === slug);
+        const chapter = manga?.chapters[chIndex];
+        if (!chapter) return document.body.innerHTML = '<p>ไม่พบตอน</p>';
+
+        for (let i = 1; i <= 100; i++) {
+          const num = i.toString().padStart(3, '0');
+          const img = new Image();
+          img.src = `${chapter.path}/${num}.jpg`;
+          img.onerror = () => img.remove();
+          document.getElementById('image-container').appendChild(img);
+        }
+
+        // 🔹 ปุ่มถัดไป
+        if (chIndex + 1 < manga.chapters.length) {
+          const nextBtn = document.createElement('a');
+          nextBtn.href = `reader.html?title=${slug}&ch=${chIndex + 1}`;
+          nextBtn.textContent = '📖 ตอนถัดไป';
+          nextBtn.style.display = 'inline-block';
+          nextBtn.style.marginTop = '20px';
+          nextBtn.style.fontSize = '18px';
+          nextBtn.style.fontWeight = 'bold';
+          document.getElementById('next-button-container').appendChild(nextBtn);
+        }
+      });
+  </script>
+</body>

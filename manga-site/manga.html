@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>รายละเอียดมังงะ</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <h1 id="manga-title"></h1>
+    <div id="chapter-list"></div>
+  </div>
+  <script>
+    const url = new URLSearchParams(window.location.search);
+    const slug = url.get('title');
+
+    fetch('data/manga.json')
+      .then(res => res.json())
+      .then(data => {
+        const manga = data.manga.find(m => m.slug === slug);
+        if (!manga) return document.body.innerHTML = '<p>ไม่พบมังงะ</p>';
+        document.getElementById('manga-title').textContent = manga.title;
+        const list = document.getElementById('chapter-list');
+        manga.chapters.forEach((ch, i) => {
+          const a = document.createElement('a');
+          a.href = `reader.html?title=${slug}&ch=${i}`;
+          a.textContent = ch.title;
+          list.appendChild(a);
+          list.appendChild(document.createElement('br'));
+        });
+      });
+  </script>
+</body>
+</html>
